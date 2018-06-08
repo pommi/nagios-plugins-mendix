@@ -14,23 +14,9 @@ STATE_WARNING=1
 STATE_CRITICAL=2
 STATE_UNKNOWN=3
 
-# current size of the partition
-function part_size()
-{
-    partition="$1"
-    size="$(df -h |grep $partition | tail -n1 | awk '{print $2}' | tr -d G/M)"
-    if [ "$(df -h |grep $partition | tail -n1 | awk '{print $2}' | tr -d [:digit:])" = "G" ]; then
-        echo "$size"
-    elif [ "$(df -h |grep $partition | tail -n1 | awk '{print $2}' | tr -d [:digit:])" = "M" ]; then
-        echo $(($size/1024))
-    fi
-}
-
 # Assign warning and critical thresholds based on partition size
-# <part_size> value is call result of <function part_size()> that represents the current size of the partition
 function assign_alert(){
-    partition="$1"
-    part_size=$(part_size $partition)
+    part_size=$(awk -v size=$(df $1 | tail -n1 | awk '{print $2}') 'BEGIN { printf("%.0f", size/1024/1024)}')
     for item in ${!Size_Range[*]}
     do
         if [[ ($part_size -ge ${Size_Range[$item]}) && ($part_size -lt ${Size_Range[item+1]}) ]] ; then
@@ -78,16 +64,16 @@ srv="$(used_percentage_partition ' /srv$')"
 postgresql="$(used_percentage_partition ' /var/lib/postgresql$')"
 
 target="$rootfs"
-assign_alert "/$"
+assign_alert "/"
 if [ ! -z "$srv" ]; then
     target="$srv"
-    assign_alert "/srv$"
+    assign_alert "/srv"
 elif [ ! -z "$var" ]; then
     target="$var"
-    assign_alert "/var$"
+    assign_alert "/var"
 elif [ ! -z "$postgresql" ]; then
     target="$postgresql"
-    assign_alert "/var/lib/postgresql$"
+    assign_alert "/var/lib/postgresql"
 fi
 
 MSG="Disk usage ${target}% (warning=${warning}, critical=${critical})"
