@@ -19,7 +19,7 @@ function part_size()
 {
     partition="$1"
     size="$(df -h |grep $partition | tail -n1 | awk '{print $2}' | tr -d G/M)"
-    if [ "$(df -h |grep $partition | tail -n1 | awk '{print $2}' | tr -d [:digit:])" = "G" ]; then 
+    if [ "$(df -h |grep $partition | tail -n1 | awk '{print $2}' | tr -d [:digit:])" = "G" ]; then
         echo "$size"
     elif [ "$(df -h |grep $partition | tail -n1 | awk '{print $2}' | tr -d [:digit:])" = "M" ]; then
         echo $(($size/1024))
@@ -33,13 +33,12 @@ function assign_alert(){
     part_size=$(part_size $partition)
     for item in ${!Size_Range[*]}
     do
-            if [[ ($part_size -ge ${Size_Range[$item]}) && ($part_size -lt ${Size_Range[item+1]}) ]] ; then
-                warning=${Warn_Level[$item]} 
-                critical=${Crit_Level[$item]}
-            fi
-    done 
+        if [[ ($part_size -ge ${Size_Range[$item]}) && ($part_size -lt ${Size_Range[item+1]}) ]] ; then
+            warning=${Warn_Level[$item]}
+            critical=${Crit_Level[$item]}
+        fi
+    done
 }
-
 
 function usage()
 {
@@ -108,4 +107,3 @@ else
     echo "OK: $MSG"
     exit $STATE_OK
 fi
-
