@@ -11,9 +11,9 @@ STATE_UNKNOWN=3
 # Assign warning and critical thresholds based on partition size
 function set_threshold(){
     # Size ranges and their corresponding Warning and Critical thresholds level
-    SIZE_RANGE=( 0 80 250 500)
-    WARN_LEVEL=(80 90  96  98)
-    CRIT_LEVEL=(90 95  98  99)
+    SIZE_RANGE=( 0 75 150 250)
+    WARN_LEVEL=(80 90  93  96)
+    CRIT_LEVEL=(90 95  97  98)
 
     part_size=$(awk -v size=$(df $1 | tail -n1 | awk '{print $2}') 'BEGIN { printf("%.0f", size/1024/1024)}')
     for item in ${!SIZE_RANGE[*]}
