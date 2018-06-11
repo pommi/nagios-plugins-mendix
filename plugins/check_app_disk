@@ -87,7 +87,7 @@ elif [ ! -z "$var" ]; then
     assign_alert "/var$"
 elif [ ! -z "$postgresql" ]; then
     target="$postgresql"
-    assign_alert "/postgresql$"
+    assign_alert "/var/lib/postgresql$"
 fi
 
 MSG="Disk usage ${target}% (warning=${warning}, critical=${critical})"
