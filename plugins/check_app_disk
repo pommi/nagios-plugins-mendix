@@ -15,7 +15,7 @@ STATE_CRITICAL=2
 STATE_UNKNOWN=3
 
 # Assign warning and critical thresholds based on partition size
-function assign_alert(){
+function set_threshold(){
     part_size=$(awk -v size=$(df $1 | tail -n1 | awk '{print $2}') 'BEGIN { printf("%.0f", size/1024/1024)}')
     for item in ${!Size_Range[*]}
     do
@@ -64,16 +64,16 @@ srv="$(used_percentage_partition ' /srv$')"
 postgresql="$(used_percentage_partition ' /var/lib/postgresql$')"
 
 target="$rootfs"
-assign_alert "/"
+set_threshold "/"
 if [ ! -z "$srv" ]; then
     target="$srv"
-    assign_alert "/srv"
+    set_threshold "/srv"
 elif [ ! -z "$var" ]; then
     target="$var"
-    assign_alert "/var"
+    set_threshold "/var"
 elif [ ! -z "$postgresql" ]; then
     target="$postgresql"
-    assign_alert "/var/lib/postgresql"
+    set_threshold "/var/lib/postgresql"
 fi
 
 MSG="Disk usage ${target}% (warning=${warning}, critical=${critical})"
